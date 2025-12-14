@@ -35,12 +35,65 @@
 
     <div class="container">
         <div class="section-header">
-            <h1>Vos offres</h1>
-            <p>Liste des offres que vous avez publiées (demo)</p>
+            <h1>Gestion des offres</h1>
+            <p>Gérez toutes vos offres d'emploi en un seul endroit</p>
         </div>
 
-        <div class="jobs-frame">
-            <div id="manageJobsList"></div>
+        <!-- Stats Bar -->
+        <div class="manage-stats-bar">
+            <div class="manage-stat-item">
+                <i class="fas fa-briefcase"></i>
+                <span id="totalJobsCount">0</span>
+                <small>Total offres</small>
+            </div>
+            <div class="manage-stat-item">
+                <i class="fas fa-check-circle"></i>
+                <span id="activeJobsCount">0</span>
+                <small>Actives</small>
+            </div>
+            <div class="manage-stat-item">
+                <i class="fas fa-users"></i>
+                <span id="totalApplicantsCount">0</span>
+                <small>Candidatures</small>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="manage-controls">
+            <div class="search-box-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="search" id="manageSearch" placeholder="Rechercher une offre..." />
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Toutes</button>
+                <button class="filter-btn" data-filter="active">Actives</button>
+                <button class="filter-btn" data-filter="recent">Récentes</button>
+            </div>
+        </div>
+
+        <div class="jobs-table-container">
+            <div class="table-wrapper">
+                <table class="jobs-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-heading"></i> Titre</th>
+                            <th><i class="fas fa-building"></i> Entreprise</th>
+                            <th><i class="fas fa-map-marker-alt"></i> Localisation</th>
+                            <th><i class="fas fa-briefcase"></i> Type</th>
+                            <th><i class="fas fa-euro-sign"></i> Salaire</th>
+                            <th><i class="fas fa-users"></i> Candidatures</th>
+                            <th><i class="fas fa-cog"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manageJobsList">
+                        <tr>
+                            <td colspan="7" class="table-loading">
+                                <i class="fas fa-spinner fa-spin"></i> Chargement...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -54,33 +107,54 @@
                 <button onclick="closeEditModal()" class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="editJobForm">
+                <form id="editJobForm" class="edit-job-form">
                     <input type="hidden" name="id" />
-                    <div style="display:flex;gap:8px;flex-wrap:wrap">
-                        <input name="title" placeholder="Titre" required style="flex:1;padding:8px" />
-                        <input name="company" placeholder="Entreprise" required style="flex:1;padding:8px" />
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-heading"></i> Titre</label>
+                            <input name="title" placeholder="Titre du poste" required />
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-building"></i> Entreprise</label>
+                            <input name="company" placeholder="Nom de l'entreprise" required />
+                        </div>
                     </div>
-                    <div style="display:flex;gap:8px; margin-top:8px;">
-                        <input name="location" placeholder="Localisation" style="flex:1;padding:8px" />
-                        <select name="type" style="padding:8px;">
-                            <option>Full-time</option>
-                            <option>Remote</option>
-                            <option>Part-time</option>
-                            <option>CDI</option>
-                        </select>
-                        <input name="salary" type="number" placeholder="Salaire" style="width:140px;padding:8px" />
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Localisation</label>
+                            <input name="location" placeholder="Paris, Remote, etc." />
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-briefcase"></i> Type</label>
+                            <select name="type">
+                                <option>Full-time</option>
+                                <option>Remote</option>
+                                <option>Part-time</option>
+                                <option>CDI</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-euro-sign"></i> Salaire</label>
+                            <input name="salary" type="number" placeholder="50000" />
+                        </div>
                     </div>
-                    <div style="margin-top:8px">
-                        <input name="tags" placeholder="Tags (séparés par ,)" style="width:100%;padding:8px" />
+                    <div class="form-group">
+                        <label><i class="fas fa-tags"></i> Tags (séparés par virgule)</label>
+                        <input name="tags" placeholder="Python, ML, SQL" />
                     </div>
-                    <div style="margin-top:8px">
-                        <textarea name="desc" placeholder="Description" rows="4" style="width:100%;padding:8px"></textarea>
+                    <div class="form-group">
+                        <label><i class="fas fa-file-alt"></i> Description</label>
+                        <textarea name="desc" placeholder="Description détaillée de l'offre..." rows="5"></textarea>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer" style="display:flex;gap:8px;justify-content:flex-end;padding:12px">
-                <button class="card-btn" onclick="closeEditModal()">Annuler</button>
-                <button class="card-btn view" onclick="saveEditedJobFromModal()">Enregistrer</button>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button class="btn-save" onclick="saveEditedJobFromModal()">
+                    <i class="fas fa-check"></i> Enregistrer
+                </button>
             </div>
         </div>
     </div>
@@ -93,6 +167,44 @@
         if(!u||u.role!=='recruiter') window.location.href='login.html';
         if(u&&u.email){ document.getElementById('currentUserEmail').textContent=u.email; const rn=document.getElementById('recName'); if(rn) rn.textContent = u.email.split('@')[0]; }
     }catch(e){}
+    
+    // Load stats
+    try {
+        if (typeof loadSavedJobs === 'function') loadSavedJobs();
+        const saved = JSON.parse(localStorage.getItem('kh_jobs') || '[]');
+        const applicants = JSON.parse(localStorage.getItem('kh_applicants') || '[]');
+        
+        document.getElementById('totalJobsCount').textContent = saved.length;
+        document.getElementById('activeJobsCount').textContent = saved.length;
+        document.getElementById('totalApplicantsCount').textContent = applicants.length;
+    } catch(e) {}
+    
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+    
+    // Search functionality
+    const searchInput = document.getElementById('manageSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.table-row');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+    
     // ensure manage jobs list refreshes
     try{ if (typeof renderManageJobs === 'function') renderManageJobs(); }catch(e){}
 </script>

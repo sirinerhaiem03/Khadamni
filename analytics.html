@@ -41,14 +41,57 @@
             <p>Indicateurs pour vos offres (demo)</p>
         </div>
 
-        <div class="results-card">
-            <div class="card-header"><i class="fas fa-chart-bar"></i><h3>Vue rapide</h3></div>
+        <div class="analytics-grid">
+            <div class="stat-card stat-card-primary">
+                <div class="stat-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Total offres visibles</div>
+                    <div class="stat-value" id="statTotalJobs">0</div>
+                </div>
+            </div>
+            
+            <div class="stat-card stat-card-success">
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Vos offres (recruteur)</div>
+                    <div class="stat-value" id="statRecruiterJobs">0</div>
+                </div>
+            </div>
+            
+            <div class="stat-card stat-card-info">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Candidatures totales</div>
+                    <div class="stat-value" id="statTotalApplicants">0</div>
+                </div>
+            </div>
+            
+            <div class="stat-card stat-card-warning">
+                <div class="stat-icon">
+                    <i class="fas fa-euro-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Salaire moyen</div>
+                    <div class="stat-value" id="statAvgSalary">0 €</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-card analytics-chart-card">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i>
+                <h3>Candidatures par offre</h3>
+            </div>
             <div class="content">
-                    <div id="analyticsStats">Chargement des indicateurs...</div>
-                    <div style="margin-top:14px; background:#fff; padding:12px; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.04)">
-                        <h4 style="margin:0 0 8px 0">Candidatures par offre (vos offres)</h4>
-                        <canvas id="applicantsChart" height="120"></canvas>
-                    </div>
+                <div class="chart-box">
+                    <canvas id="applicantsChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -72,31 +115,42 @@
         const applicants = JSON.parse(localStorage.getItem('kh_applicants')||'[]');
         const totalApplicants = Array.isArray(applicants) ? applicants.length : 0;
         const avgSalary = totalJobs ? Math.round(window.JOBS.reduce((s,j)=>s + (j.salary||0), 0) / totalJobs) : 0;
-        const el = document.getElementById('analyticsStats');
-        if (!el) return;
-        el.innerHTML = `
-            <div style="display:flex;gap:18px;flex-wrap:wrap">
-                <div style="flex:1;min-width:220px;padding:12px;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06)">
-                    <strong>Total offres visibles</strong>
-                    <div style="font-size:1.6rem;margin-top:8px">${totalJobs}</div>
-                </div>
-                <div style="flex:1;min-width:220px;padding:12px;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06)">
-                    <strong>Vos offres (recruteur)</strong>
-                    <div style="font-size:1.6rem;margin-top:8px">${recruiterJobs}</div>
-                </div>
-                <div style="flex:1;min-width:220px;padding:12px;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06)">
-                    <strong>Candidatures totales</strong>
-                    <div style="font-size:1.6rem;margin-top:8px">${totalApplicants}</div>
-                </div>
-                <div style="flex:1;min-width:220px;padding:12px;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06)">
-                    <strong>Salaire moyen</strong>
-                    <div style="font-size:1.6rem;margin-top:8px">${avgSalary.toLocaleString('fr-FR')} €</div>
-                </div>
-            </div>
-            <div style="margin-top:16px;color:var(--text-light)">Les chiffres sont des indicateurs demo basés sur les offres côté client.</div>
-        `;
+        
+        // Update stat cards with animation
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const current = Math.floor(progress * (end - start) + start);
+                element.textContent = current.toLocaleString('fr-FR');
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        const totalJobsEl = document.getElementById('statTotalJobs');
+        const recruiterJobsEl = document.getElementById('statRecruiterJobs');
+        const totalApplicantsEl = document.getElementById('statTotalApplicants');
+        const avgSalaryEl = document.getElementById('statAvgSalary');
+        
+        if (totalJobsEl) animateValue(totalJobsEl, 0, totalJobs, 1000);
+        if (recruiterJobsEl) animateValue(recruiterJobsEl, 0, recruiterJobs, 1000);
+        if (totalApplicantsEl) animateValue(totalApplicantsEl, 0, totalApplicants, 1000);
+        if (avgSalaryEl) {
+            setTimeout(() => {
+                avgSalaryEl.textContent = avgSalary.toLocaleString('fr-FR') + ' €';
+            }, 500);
+        }
+        
         // draw chart if function available
-        try { if (typeof renderApplicantsChart === 'function') renderApplicantsChart(); } catch(e) { console.warn('chart error', e); }
+        try { 
+            setTimeout(() => {
+                if (typeof renderApplicantsChart === 'function') renderApplicantsChart(); 
+            }, 300);
+        } catch(e) { console.warn('chart error', e); }
     }catch(e){ console.warn(e); }
 </script>
 </body>

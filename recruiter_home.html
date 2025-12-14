@@ -45,23 +45,118 @@
 
     <div class="container">
         <div class="section-header">
-            <h1>Welcome, Recruiter</h1>
-            <p>Manage your job postings and view candidates.</p>
+            <h1>Bienvenue, <span id="recNameHeader">Recruteur</span></h1>
+            <p>Gérez vos offres d'emploi et découvrez les meilleurs candidats</p>
         </div>
 
+        <!-- Quick Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card-mini stat-mini-primary">
+                <div class="stat-mini-icon"><i class="fas fa-briefcase"></i></div>
+                <div class="stat-mini-content">
+                    <div class="stat-mini-value" id="statJobs">0</div>
+                    <div class="stat-mini-label">Offres actives</div>
+                </div>
+            </div>
+            <div class="stat-card-mini stat-mini-success">
+                <div class="stat-mini-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-mini-content">
+                    <div class="stat-mini-value" id="statCandidates">0</div>
+                    <div class="stat-mini-label">Candidatures</div>
+                </div>
+            </div>
+            <div class="stat-card-mini stat-mini-info">
+                <div class="stat-mini-icon"><i class="fas fa-eye"></i></div>
+                <div class="stat-mini-content">
+                    <div class="stat-mini-value" id="statViews">0</div>
+                    <div class="stat-mini-label">Vues totales</div>
+                </div>
+            </div>
+            <div class="stat-card-mini stat-mini-warning">
+                <div class="stat-mini-icon"><i class="fas fa-clock"></i></div>
+                <div class="stat-mini-content">
+                    <div class="stat-mini-value" id="statPending">0</div>
+                    <div class="stat-mini-label">En attente</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3 class="quick-actions-title"><i class="fas fa-bolt"></i> Actions rapides</h3>
+            <div class="quick-actions-grid">
+                <a href="post_job.html" class="quick-action-card action-primary">
+                    <div class="quick-action-icon"><i class="fas fa-plus-circle"></i></div>
+                    <div class="quick-action-content">
+                        <h4>Poster une offre</h4>
+                        <p>Créer une nouvelle offre d'emploi</p>
+                    </div>
+                    <div class="quick-action-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+                <a href="manage_jobs.html" class="quick-action-card action-success">
+                    <div class="quick-action-icon"><i class="fas fa-edit"></i></div>
+                    <div class="quick-action-content">
+                        <h4>Gérer les offres</h4>
+                        <p>Modifier ou supprimer vos offres</p>
+                    </div>
+                    <div class="quick-action-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+                <a href="candidates.html" class="quick-action-card action-info">
+                    <div class="quick-action-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="quick-action-content">
+                        <h4>Voir candidats</h4>
+                        <p>Consulter les candidatures</p>
+                    </div>
+                    <div class="quick-action-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+                <a href="analytics.html" class="quick-action-card action-warning">
+                    <div class="quick-action-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div class="quick-action-content">
+                        <h4>Analytics</h4>
+                        <p>Statistiques et analyses</p>
+                    </div>
+                    <div class="quick-action-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
         <div class="content-grid">
             <div class="form-card recruiter-card-accent">
-                <div class="card-header"><i class="fas fa-upload"></i><h3>Post a Job</h3></div>
+                <div class="card-header"><i class="fas fa-bell"></i><h3>Activité récente</h3></div>
                 <div class="content">
-                    <p>Create a new job posting (demo).</p>
-                    <button class="btn-primary" onclick="alert('Open job post form (demo)')">Create Posting</button>
+                    <div class="activity-list" id="recentActivity">
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-user-plus"></i></div>
+                            <div class="activity-content">
+                                <p><strong>Nouvelle candidature</strong></p>
+                                <small>Il y a 2 heures</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-eye"></i></div>
+                            <div class="activity-content">
+                                <p><strong>Votre offre a été vue 15 fois</strong></p>
+                                <small>Il y a 5 heures</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="activity-content">
+                                <p><strong>Offre publiée avec succès</strong></p>
+                                <small>Hier</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="results-card recruiter-card-accent">
-                <div class="card-header"><i class="fas fa-users"></i><h3>Candidates</h3></div>
+                <div class="card-header"><i class="fas fa-star"></i><h3>Top offres</h3></div>
                 <div class="content">
-                    <p>Recent applicants will appear here.</p>
+                    <div class="top-jobs-list" id="topJobs">
+                        <p class="placeholder">Vos offres les plus populaires apparaîtront ici</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -73,8 +168,44 @@
     // show current user email if available
     try{
         const u = JSON.parse(localStorage.getItem('kh_current_user'));
-        if (u && u.email) document.getElementById('currentUserEmail').textContent = u.email;
+        if (u && u.email) {
+            document.getElementById('currentUserEmail').textContent = u.email;
+            const recNameHeader = document.getElementById('recNameHeader');
+            if (recNameHeader) recNameHeader.textContent = u.email.split('@')[0];
+        }
     }catch(e){/* ignore */}
+
+    // Load stats
+    try {
+        if (typeof loadSavedJobs === 'function') loadSavedJobs();
+        const saved = JSON.parse(localStorage.getItem('kh_jobs') || '[]');
+        const applicants = JSON.parse(localStorage.getItem('kh_applicants') || '[]');
+        
+        const jobsCount = saved.length;
+        const candidatesCount = applicants.length;
+        
+        // Animate stats
+        function animateStat(id, value) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let current = 0;
+            const increment = value / 30;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= value) {
+                    el.textContent = value;
+                    clearInterval(timer);
+                } else {
+                    el.textContent = Math.floor(current);
+                }
+            }, 30);
+        }
+        
+        animateStat('statJobs', jobsCount);
+        animateStat('statCandidates', candidatesCount);
+        animateStat('statViews', Math.floor(jobsCount * 12.5));
+        animateStat('statPending', Math.floor(candidatesCount * 0.3));
+    } catch(e) { console.warn(e); }
 </script>
 </body>
 </html>

@@ -116,6 +116,71 @@
     </div>
 </div>
 
+<!-- Modal Candidature -->
+<div id="applyModal" class="modal" aria-hidden="true" style="display:none;">
+    <div class="modal-content apply-modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-paper-plane"></i> Postuler à cette offre</h2>
+            <button class="modal-close" onclick="closeApplyModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="applyForm" class="apply-form">
+                <input type="hidden" id="applyJobId" name="jobId" />
+                
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Nom complet</label>
+                    <input type="text" id="applyName" name="name" placeholder="Votre nom complet" required />
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="applyEmail" name="email" placeholder="votre@email.com" required />
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Téléphone</label>
+                    <input type="tel" id="applyPhone" name="phone" placeholder="+33 6 12 34 56 78" />
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-file-alt"></i> Message de motivation</label>
+                    <textarea id="applyMessage" name="message" rows="5" placeholder="Expliquez pourquoi vous êtes intéressé(e) par ce poste..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-link"></i> LinkedIn (optionnel)</label>
+                    <input type="url" id="applyLinkedIn" name="linkedin" placeholder="https://linkedin.com/in/votre-profil" />
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-file-pdf"></i> CV (optionnel)</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="applyCV" name="cv" accept=".pdf,.doc,.docx" />
+                        <label for="applyCV" class="file-upload-label">
+                            <i class="fas fa-upload"></i>
+                            <span>Choisir un fichier</span>
+                        </label>
+                        <span class="file-name" id="fileName">Aucun fichier sélectionné</span>
+                    </div>
+                </div>
+                
+                <div class="form-checkbox">
+                    <input type="checkbox" id="applyTerms" name="terms" required />
+                    <label for="applyTerms">J'accepte que mes données soient utilisées pour cette candidature</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeApplyModal()">
+                <i class="fas fa-times"></i> Annuler
+            </button>
+            <button class="btn-submit" onclick="submitApplication()">
+                <i class="fas fa-paper-plane"></i> Envoyer la candidature
+            </button>
+        </div>
+    </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>

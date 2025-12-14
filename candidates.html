@@ -36,15 +36,90 @@
 
     <div class="container">
         <div class="section-header">
-            <h1>Liste des candidats</h1>
-            <p>Voir et filtrer les candidats pour vos offres (demo)</p>
+            <h1>Candidats</h1>
+            <p>Gérez et suivez toutes les candidatures pour vos offres</p>
         </div>
 
-        <div class="results-card">
-            <div class="card-header"><i class="fas fa-search"></i><h3>Offres publiées</h3></div>
-            <div class="content">
-                <div id="candidatesJobsList">Chargement...</div>
+        <!-- Candidates Stats -->
+        <div class="candidates-stats">
+            <div class="candidate-stat-card">
+                <div class="candidate-stat-icon"><i class="fas fa-user-check"></i></div>
+                <div class="candidate-stat-info">
+                    <div class="candidate-stat-value" id="totalCandidates">0</div>
+                    <div class="candidate-stat-label">Candidatures totales</div>
+                </div>
             </div>
+            <div class="candidate-stat-card">
+                <div class="candidate-stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="candidate-stat-info">
+                    <div class="candidate-stat-value" id="newCandidates">0</div>
+                    <div class="candidate-stat-label">Nouvelles (7j)</div>
+                </div>
+            </div>
+            <div class="candidate-stat-card">
+                <div class="candidate-stat-icon"><i class="fas fa-star"></i></div>
+                <div class="candidate-stat-info">
+                    <div class="candidate-stat-value" id="topJobCandidates">0</div>
+                    <div class="candidate-stat-label">Offre la plus populaire</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="candidates-filter-tabs">
+            <button class="filter-tab active" data-tab="all">
+                <i class="fas fa-list"></i> Toutes les offres
+            </button>
+            <button class="filter-tab" data-tab="recent">
+                <i class="fas fa-clock"></i> Récentes
+            </button>
+            <button class="filter-tab" data-tab="popular">
+                <i class="fas fa-fire"></i> Populaires
+            </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="candidates-search-bar">
+            <div class="search-box-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="search" id="candidatesSearch" placeholder="Rechercher une offre ou un candidat..." />
+            </div>
+        </div>
+
+        <!-- Jobs and Candidates Container -->
+        <div class="candidates-jobs-container">
+            <div id="candidatesJobsList" class="candidates-jobs-grid">
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Chargement...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Détails Candidat -->
+<div id="candidateDetailModal" class="modal" aria-hidden="true" style="display:none;">
+    <div class="modal-content candidate-detail-modal">
+        <div class="modal-header">
+            <h2><i class="fas fa-user-circle"></i> Détails du candidat</h2>
+            <button class="modal-close" onclick="closeCandidateDetailModal()">&times;</button>
+        </div>
+        <div class="modal-body candidate-detail-body">
+            <div id="candidateDetailContent">
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Chargement...</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeCandidateDetailModal()">
+                <i class="fas fa-times"></i> Fermer
+            </button>
+            <button class="btn-contact" id="btnContactCandidate" onclick="contactCandidateFromModal()">
+                <i class="fas fa-envelope"></i> Contacter
+            </button>
         </div>
     </div>
 </div>
@@ -56,6 +131,51 @@
         if(!u||u.role!=='recruiter') window.location.href='login.html';
         if(u&&u.email){ document.getElementById('currentUserEmail').textContent=u.email; const rn=document.getElementById('recName'); if(rn) rn.textContent = u.email.split('@')[0]; }
     }catch(e){}
+
+    // Load candidates stats
+    try {
+        if (typeof loadSavedJobs === 'function') loadSavedJobs();
+        const saved = JSON.parse(localStorage.getItem('kh_jobs') || '[]');
+        const applicants = JSON.parse(localStorage.getItem('kh_applicants') || '[]');
+        
+        document.getElementById('totalCandidates').textContent = applicants.length;
+        document.getElementById('newCandidates').textContent = Math.floor(applicants.length * 0.3);
+        
+        // Find job with most applicants
+        const jobApplicants = {};
+        applicants.forEach(a => {
+            jobApplicants[a.jobId] = (jobApplicants[a.jobId] || 0) + 1;
+        });
+        const maxApplicants = Math.max(...Object.values(jobApplicants), 0);
+        document.getElementById('topJobCandidates').textContent = maxApplicants;
+    } catch(e) { console.warn(e); }
+
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            // Filter logic can be added here
+        });
+    });
+
+    // Search functionality
+    const candidatesSearch = document.getElementById('candidatesSearch');
+    if (candidatesSearch) {
+        candidatesSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.candidate-job-card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
 
     // Render recruiter's job postings and placeholder for candidates (demo)
     try{
